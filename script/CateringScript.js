@@ -1,5 +1,6 @@
 var selectedStage = 0;
 var stageUserCount = 0;
+var sheetKey = "1RORlVLWBYT-7tBeR6zw-Ejmsv7v57DU45B1ArMYorsk";
 
 String.prototype.format = function() {
   var theString = this;
@@ -23,6 +24,7 @@ function setStage(){
 
 
 function selectStage(){
+  selectedStage = $("#stage option:selected").val();
   stageUserCount = 0;
 
     $("#stageInfo").show();
@@ -101,6 +103,7 @@ function calTotal()
 
   var resultText = "";
 
+  resultText += "남은 점수 : {0}<br>".format(targetScore);
   resultText += "<br>계산결과(딜로스) : {0} ({1})<br><br>".format(bestScore, bestDeallose);
 
   resultText += "---------막타 칠 사람들--------------<br>";
@@ -134,6 +137,40 @@ function calTotal()
   $("#result").append(resultText);
 }
 
+function SaveStage(){
+
+  var dataStr = "";
+  i = 0;
+  count = 0;
+  dataStr += $("#targetScore").val() + ",";
+  dataStr += $("#nowScore").val();
+
+  while(count < stageUserCount)
+  {
+    if($("#userScore"+i).val() != 0){
+      dataStr += "," + $("#userName"+i).val() +","+$("#userScore"+i).val();
+      count++;
+    }
+    i++;
+  }
+  console.log(dataStr);
+
+  $.ajax({
+    type: "POST",
+    url: "https://script.google.com/macros/s/AKfycbwDOy7Ap5afNUi55sXceH8r0ye4pHK5HuFzLqzUxrl5Z2Rbcny86WGVItZtScH89Jxs/exec",
+    data: {
+      "sheet_name":"1",
+      "datas":dataStr,
+      "stage":selectedStage
+    },
+    success:function(data){
+    console.log(data);
+      alert('입력 완료.');
+    }
+  });
+}
+
+
 
 const getCombinations = function (arr, selectNumber) {
   const results = [];
@@ -147,8 +184,4 @@ const getCombinations = function (arr, selectNumber) {
   });
 
   return results; // 결과 담긴 results return
-}
-
-function stageSave(){
-  
 }
